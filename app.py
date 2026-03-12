@@ -43,9 +43,6 @@ if st.button("🔄 Refresh Kobo Data"):
 
 df = st.session_state.df
 
-st.write("Dataset shape:", df.columns)
-
-
 # =====================
 # Convert submission time
 # =====================
@@ -115,6 +112,7 @@ table3 = dup[dup['asha'] == selected_asha][
 
 st.subheader("Table 3: Duplicate List")
 st.dataframe(table3)
+
 
 
 
