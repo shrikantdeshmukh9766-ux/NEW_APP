@@ -6,7 +6,9 @@ TOKEN = "23801d339dd6d16509a79250731f126401d5f7a3"
 BASE_URL = "https://kobo.humanitarianresponse.info/api/v2"
 asset_uid = "afWux6DQFqmZrEpK54BobD"
 
-# Function to download data
+# =====================
+# FUNCTION TO LOAD DATA
+# =====================
 def load_kobo_data():
 
     kobo = KoboExtractor(TOKEN, BASE_URL)
@@ -27,7 +29,10 @@ def load_kobo_data():
         start += limit
 
     df = pd.json_normalize(all_records)
+
+    # Clean Kobo column names
     df.columns = df.columns.str.split('/').str[-1]
+
     return df
 
 
@@ -43,8 +48,12 @@ if st.button("🔄 Refresh Kobo Data"):
 
 df = st.session_state.df
 
+st.title("ASHA Monitoring Dashboard")
+
+st.write("Total Records:", df.shape[0])
+
 # =====================
-# Convert submission time
+# CONVERT DATE
 # =====================
 
 df['_submission_time'] = pd.to_datetime(df['_submission_time'])
@@ -74,7 +83,8 @@ month_order = (
 table1 = table1.reindex(columns=month_order)
 
 st.subheader("Table 1: ASHA Month-wise Form Count")
-st.dataframe(table1)
+
+st.dataframe(table1, use_container_width=True)
 
 # =====================
 # FIND DUPLICATES
@@ -86,7 +96,7 @@ dup = df[df.duplicated(
 )]
 
 # =====================
-# TABLE 2
+# TABLE 2 : DUPLICATE COUNT
 # =====================
 
 table2 = (
@@ -96,23 +106,26 @@ table2 = (
 )
 
 st.subheader("Table 2: Duplicate Participants by ASHA")
-st.dataframe(table2)
+
+st.dataframe(table2, use_container_width=True)
 
 # =====================
-# TABLE 3
+# TABLE 3 : DUPLICATE LIST
 # =====================
 
-asha_list = dup['asha'].unique()
+st.subheader("Table 3: Duplicate Participant List")
 
-selected_asha = st.selectbox("Select ASHA", asha_list)
+if len(dup) > 0:
 
-table3 = dup[dup['asha'] == selected_asha][
-    ['asha','Paticipant','_submission_time']
-]
+    asha_list = sorted(dup['asha'].unique())
 
-st.subheader("Table 3: Duplicate List")
-st.dataframe(table3)
+    selected_asha = st.selectbox("Select ASHA", asha_list)
 
+    table3 = dup[dup['asha'] == selected_asha][
+        ['asha','Paticipant','_submission_time']
+    ].sort_values('Paticipant')
 
+    st.dataframe(table3, use_container_width=True)
 
-
+else:
+    st.success("No duplicate participants found.")
