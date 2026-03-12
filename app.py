@@ -33,6 +33,12 @@ def load_kobo_data():
     # Clean Kobo column names
     df.columns = df.columns.str.split('/').str[-1]
 
+    # Rename Kobo columns to simple names
+    df = df.rename(columns={
+        'Select_the_Name_of_Asha': 'asha',
+        'Select_the_Participant_Unique_Code': 'Paticipant'
+    })
+
     return df
 
 
