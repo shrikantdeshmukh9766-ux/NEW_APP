@@ -50,7 +50,6 @@ df = st.session_state.df
 
 st.title("ASHA Monitoring Dashboard")
 
-st.write("Total Records:", df.shape[0])
 
 # =====================
 # CONVERT DATE
@@ -85,3 +84,4 @@ table1 = table1.reindex(columns=month_order)
 st.subheader("Table 1: ASHA Month-wise Form Count")
 
 st.dataframe(table1, use_container_width=True)
+
