@@ -61,7 +61,7 @@ df['Month_num'] = df['_submission_time'].dt.month
 table1 = pd.pivot_table(
     df,
     index='asha',
-    columns='Month_num',
+    columns='Month',
     values='Paticipant',
     aggfunc='count',
     fill_value=0
@@ -114,4 +114,5 @@ table3 = dup[dup['asha'] == selected_asha][
 
 st.subheader("Table 3: Duplicate List")
 st.dataframe(table3)
+
 
