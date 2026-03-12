@@ -50,6 +50,7 @@ df = st.session_state.df
 
 st.title("ASHA Monitoring Dashboard")
 
+st.write("Total Records:", df.shape[0])
 
 # =====================
 # CONVERT DATE
@@ -85,3 +86,46 @@ st.subheader("Table 1: ASHA Month-wise Form Count")
 
 st.dataframe(table1, use_container_width=True)
 
+# =====================
+# FIND DUPLICATES
+# =====================
+
+dup = df[df.duplicated(
+    subset=['asha','Paticipant'],
+    keep=False
+)]
+
+# =====================
+# TABLE 2 : DUPLICATE COUNT
+# =====================
+
+table2 = (
+    dup.groupby('asha')['Paticipant']
+    .nunique()
+    .reset_index(name='Duplicate Participants')
+)
+
+st.subheader("Table 2: Duplicate Participants by ASHA")
+
+st.dataframe(table2, use_container_width=True)
+
+# =====================
+# TABLE 3 : DUPLICATE LIST
+# =====================
+
+st.subheader("Table 3: Duplicate Participant List")
+
+if len(dup) > 0:
+
+    asha_list = sorted(dup['asha'].unique())
+
+    selected_asha = st.selectbox("Select ASHA", asha_list)
+
+    table3 = dup[dup['asha'] == selected_asha][
+        ['asha','Paticipant','_submission_time']
+    ].sort_values('Paticipant')
+
+    st.dataframe(table3, use_container_width=True)
+
+else:
+    st.success("No duplicate participants found.")
