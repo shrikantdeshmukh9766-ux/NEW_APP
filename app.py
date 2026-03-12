@@ -27,7 +27,7 @@ def load_kobo_data():
         start += limit
 
     df = pd.json_normalize(all_records)
-
+    df.columns = df.columns.str.split('/').str[-1]
     return df
 
 
@@ -44,3 +44,77 @@ if st.button("🔄 Refresh Kobo Data"):
 df = st.session_state.df
 
 st.write("Dataset shape:", df.columns)
+
+
+# =====================
+# Convert submission time
+# =====================
+
+df['_submission_time'] = pd.to_datetime(df['_submission_time'])
+
+df['Month'] = df['_submission_time'].dt.strftime('%b')
+df['Month_num'] = df['_submission_time'].dt.month
+
+# =====================
+# TABLE 1 : ASHA × MONTH
+# =====================
+
+table1 = pd.pivot_table(
+    df,
+    index='asha',
+    columns='Month',
+    values='Paticipant',
+    aggfunc='count',
+    fill_value=0
+)
+
+month_order = (
+    df[['Month','Month_num']]
+    .drop_duplicates()
+    .sort_values('Month_num')['Month']
+)
+
+table1 = table1.reindex(columns=month_order)
+
+st.subheader("Table 1: ASHA Month-wise Form Count")
+st.dataframe(table1)
+
+# =====================
+# FIND DUPLICATES
+# =====================
+
+dup = df[df.duplicated(
+    subset=['asha','Paticipant'],
+    keep=False
+)]
+
+# =====================
+# TABLE 2
+# =====================
+
+table2 = (
+    dup.groupby('asha')['Paticipant']
+    .nunique()
+    .reset_index(name='Duplicate Participants')
+)
+
+st.subheader("Table 2: Duplicate Participants by ASHA")
+st.dataframe(table2)
+
+# =====================
+# TABLE 3
+# =====================
+
+asha_list = dup['asha'].unique()
+
+selected_asha = st.selectbox("Select ASHA", asha_list)
+
+table3 = dup[dup['asha'] == selected_asha][
+    ['asha','Paticipant','_submission_time']
+]
+
+st.subheader("Table 3: Duplicate List")
+st.dataframe(table3)
+
+
+
