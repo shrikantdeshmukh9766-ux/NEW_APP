@@ -4,8 +4,7 @@ import pandas as pd
 st.title("ASHA Monitoring Dashboard")
 
 # GitHub file link
-github_url = "https://github.com/shrikantdeshmukh9766-ux/NEW_APP/blob/ccfc25827b7b7e85bfcb74eca04c7a1def6e2002/Round-2Baseline_form_for_COPD_and_Asthma_survey_by_ASHA_2025-2027_-_all_versions_-_labels_-_2026-03-09-17-33-30.xlsx"
-
+github_url = "https://raw.githubusercontent.com/shrikantdeshmukh9766-ux/NEW_APP/ccfc25827b7b7e85bfcb74eca04c7a1def6e2002/Round-2Baseline_form_for_COPD_and_Asthma_survey_by_ASHA_2025-2027_-_all_versions_-_labels_-_2026-03-09-17-33-30.xlsx"
 # Read file
 if github_url.endswith(".csv"):
     df = pd.read_csv(github_url)
@@ -72,3 +71,4 @@ table3 = dup[dup['Select the Name of Asha'] == selected_asha][
 ].sort_values(['Select the Participant Unique Code','_submission_time'])
 
 st.dataframe(table3)
+
