@@ -2,137 +2,94 @@ import streamlit as st
 from koboextractor import KoboExtractor
 import pandas as pd
 
-TOKEN = "23801d339dd6d16509a79250731f126401d5f7a3"
+TOKEN    = "23801d339dd6d16509a79250731f126401d5f7a3"
 BASE_URL = "https://kobo.humanitarianresponse.info/api/v2"
 asset_uid = "afWux6DQFqmZrEpK54BobD"
 
-# =====================
-# FUNCTION TO LOAD DATA
-# =====================
 def load_kobo_data():
-
     kobo = KoboExtractor(TOKEN, BASE_URL)
-
-    start = 0
-    limit = 1000
-    all_records = []
-
+    start, limit, all_records = 0, 1000, []
     while True:
-        data = kobo.get_data(asset_uid, start=start, limit=limit)
-
+        data    = kobo.get_data(asset_uid, start=start, limit=limit)
         records = data["results"]
-
-        if len(records) == 0:
+        if not records:
             break
-
         all_records.extend(records)
         start += limit
 
     df = pd.json_normalize(all_records)
 
-    # Clean Kobo column names
-    df.columns = df.columns.str.split('/').str[-1]
-
-    # Rename Kobo columns to simple names
+    # Rename BEFORE stripping group prefix
     df = df.rename(columns={
-        'group_og9hq60/asha': 'asha',
+        'group_og9hq60/asha':       'asha',
         'group_og9hq60/Paticipant': 'Paticipant'
     })
-
+    df.columns = [
+        col if col in ['asha', 'Paticipant']
+        else col.split('/')[-1]
+        for col in df.columns
+    ]
     return df
 
-
-# =====================
-# REFRESH BUTTON
-# =====================
-
+# ── Init / Refresh ──────────────────────────────────────
 if "df" not in st.session_state:
-    st.session_state.df = load_kobo_data()
+    with st.spinner("Loading data..."):
+        st.session_state.df = load_kobo_data()
 
 if st.button("🔄 Refresh Kobo Data"):
-    st.session_state.df = load_kobo_data()
+    with st.spinner("Fetching latest data..."):
+        st.session_state.df = load_kobo_data()
+    st.success("Refreshed!")
 
 df = st.session_state.df
-
 st.title("आशा मॉनिटरिंग डॅशबोर्ड")
 
-st.write("Total Records:", df.shape[0])
+# ── Guard ───────────────────────────────────────────────
+for col in ['asha', 'Paticipant', '_submission_time']:
+    if col not in df.columns:
+        st.error(f"Column '{col}' not found. Check KoboToolbox field names.")
+        st.stop()
 
-# =====================
-# CONVERT DATE
-# =====================
+st.write("एकूण नोंदी:", df.shape[0])
 
+# ── Dates ───────────────────────────────────────────────
 df['_submission_time'] = pd.to_datetime(df['_submission_time'])
-
-df['Month'] = df['_submission_time'].dt.strftime('%b')
+df['Month']     = df['_submission_time'].dt.strftime('%b')
 df['Month_num'] = df['_submission_time'].dt.month
 
-# =====================
-# TABLE 1 : ASHA × MONTH
-# =====================
-
+# ── Table 1 : ASHA × Month ──────────────────────────────
+st.subheader("तक्ता १: आशा फॉर्म भरलेले कॅलेंडर टेबल")
 table1 = pd.pivot_table(
-    df,
-    index='asha',
-    columns='Month',
-    values='Paticipant',
-    aggfunc='count',
-    fill_value=0
+    df, index='asha', columns='Month',
+    values='Paticipant', aggfunc='count', fill_value=0
 )
-
-month_order = (
-    df[['Month','Month_num']]
-    .drop_duplicates()
-    .sort_values('Month_num')['Month']
-)
-
+month_order = (df[['Month','Month_num']].drop_duplicates()
+               .sort_values('Month_num')['Month'])
 table1 = table1.reindex(columns=month_order)
-
-st.subheader("         तक्ता १: आशा फॉर्म भरलेले कॅलेंडर टेबल")
-
+table1['एकूण'] = table1.sum(axis=1)   # ← Total column
 st.dataframe(table1, use_container_width=True)
 
-# =====================
-# FIND DUPLICATES
-# =====================
+# ── Duplicates ──────────────────────────────────────────
+dup = df[df.duplicated(subset=['asha','Paticipant'], keep=False)]
 
-dup = df[df.duplicated(
-    subset=['asha','Paticipant'],
-    keep=False
-)]
-
-# =====================
-# TABLE 2 : DUPLICATE COUNT
-# =====================
-
-table2 = (
-    dup.groupby('asha')['Paticipant']
-    .nunique()
-    .reset_index(name='Duplicate Participants')
-)
-
-st.subheader("         तक्ता २: आशानुसार एकाच सहभागीची अनेक नोंदी संख्या")
-
+# ── Table 2 : Duplicate Count ───────────────────────────
+st.subheader("तक्ता २: आशानुसार एकाच सहभागीची अनेक नोंदी संख्या")
+table2 = (dup.groupby('asha')['Paticipant']
+            .count()
+            .reset_index(name='Duplicate Entries')
+            .sort_values('Duplicate Entries', ascending=False))
 st.dataframe(table2, use_container_width=True)
 
-# =====================
-# TABLE 3 : DUPLICATE LIST
-# =====================
-
-st.subheader("         तक्ता ३: आशानुसार एकाच सहभागीच्या अनेक नोंदींची ")
-
+# ── Table 3 : Duplicate Detail ──────────────────────────
+st.subheader("तक्ता ३: आशानुसार एकाच सहभागीच्या अनेक नोंदींची यादी")
 if len(dup) > 0:
-
-    asha_list = sorted(dup['asha'].unique())
-
-    selected_asha = st.selectbox("Select ASHA", asha_list)
-
-    table3 = dup[dup['asha'] == selected_asha][
-        ['asha','Paticipant','_submission_time']
-    ].sort_values('Paticipant')
-
+    selected_asha = st.selectbox("ASHA निवडा", sorted(dup['asha'].unique()))
+    table3 = (dup[dup['asha'] == selected_asha]
+              [['asha','Paticipant','_submission_time']]
+              .sort_values('Paticipant')
+              .copy())
+    table3['नोंदी संख्या'] = (table3.groupby('Paticipant')['Paticipant']
+                               .transform('count'))
     st.dataframe(table3, use_container_width=True)
-
 else:
-    st.success("No duplicate participants found.")
-
+    st.success("✅ कोणतेही डुप्लिकेट सहभागी आढळले नाहीत.")
