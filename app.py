@@ -88,7 +88,7 @@ month_order = (
 
 table1 = table1.reindex(columns=month_order)
 
-st.subheader("Table 1: ASHA Month-wise Form Count")
+st.subheader("         तक्ता १: आशा फॉर्म भरलेले कॅलेंडर टेबल")
 
 st.dataframe(table1, use_container_width=True)
 
@@ -111,7 +111,7 @@ table2 = (
     .reset_index(name='Duplicate Participants')
 )
 
-st.subheader("Table 2: Duplicate Participants by ASHA")
+st.subheader("         तक्ता २: आशानुसार एकाच सहभागीची अनेक नोंदी संख्या")
 
 st.dataframe(table2, use_container_width=True)
 
@@ -119,7 +119,7 @@ st.dataframe(table2, use_container_width=True)
 # TABLE 3 : DUPLICATE LIST
 # =====================
 
-st.subheader("Table 3: Duplicate Participant List")
+st.subheader("         तक्ता ३: आशानुसार एकाच सहभागीच्या अनेक नोंदींची ")
 
 if len(dup) > 0:
 
