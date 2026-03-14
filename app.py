@@ -54,7 +54,7 @@ if st.button("🔄 Refresh Kobo Data"):
 
 df = st.session_state.df
 
-st.title("ASHA Monitoring Dashboard")
+st.title("आशा मॉनिटरिंग डॅशबोर्ड")
 
 st.write("Total Records:", df.shape[0])
 
