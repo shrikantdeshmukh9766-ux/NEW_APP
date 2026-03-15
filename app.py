@@ -13,41 +13,50 @@ st.set_page_config(
 )
 
 # =====================
-# CUSTOM CSS
+# CUSTOM CSS  — Light Blue Theme, Faint Month Colors
 # =====================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
 
-/* ── Root & Body ── */
+/* ── Root ── */
 html, body, [class*="css"] {
     font-family: 'Baloo 2', 'Noto Sans Devanagari', sans-serif;
 }
 
+/* ── App Background — soft light blue ── */
 .stApp {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
-    background-attachment: fixed;
+    background: #eaf4fb;
     min-height: 100vh;
 }
 
-/* overlay for readability */
+/* subtle dot-grid texture */
 .stApp::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(0px);
+    background-image: radial-gradient(circle, #b8d9f0 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.35;
     pointer-events: none;
     z-index: 0;
 }
 
-/* ── Header Banner ── */
+/* ── Block container ── */
+.block-container {
+    padding-top: 1.8rem !important;
+    padding-bottom: 2rem !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Hero Banner ── */
 .hero-banner {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #533483 100%);
-    border-radius: 24px;
-    padding: 36px 40px;
-    margin-bottom: 28px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    background: linear-gradient(135deg, #1b4f72 0%, #1a6fa6 50%, #2e86c1 100%);
+    border-radius: 22px;
+    padding: 34px 40px;
+    margin-bottom: 26px;
+    box-shadow: 0 8px 32px rgba(27,79,114,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
     position: relative;
     overflow: hidden;
 }
@@ -55,174 +64,167 @@ html, body, [class*="css"] {
 .hero-banner::before {
     content: '🌸';
     position: absolute;
-    right: 40px;
+    right: 44px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 80px;
-    opacity: 0.15;
+    font-size: 72px;
+    opacity: 0.12;
 }
 
 .hero-banner::after {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -20%;
-    width: 60%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
-    transform: rotate(15deg);
+    top: -60%;
+    left: -10%;
+    width: 50%;
+    height: 220%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+    transform: rotate(12deg);
 }
 
 .hero-title {
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 800;
-    background: linear-gradient(90deg, #f093fb, #f5576c, #fda085, #4facfe);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 8px 0;
+    color: #ffffff;
+    margin: 0 0 7px 0;
     line-height: 1.2;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 
 .hero-subtitle {
-    color: rgba(255,255,255,0.6);
-    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+    font-size: 13.5px;
     font-weight: 400;
     margin: 0;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 /* ── Metric Cards ── */
 .metrics-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
+    gap: 14px;
+    margin-bottom: 26px;
 }
 
 .metric-card {
-    border-radius: 18px;
-    padding: 22px 24px;
+    border-radius: 16px;
+    padding: 20px 22px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 18px rgba(27,79,114,0.10);
     transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255,255,255,0.7);
 }
 
 .metric-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 28px rgba(27,79,114,0.15);
 }
 
-.metric-card-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
-.metric-card-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.metric-card-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-.metric-card-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+/* soft pastel card tones */
+.metric-card-1 { background: linear-gradient(135deg, #dbeeff, #c2dcf7); }
+.metric-card-2 { background: linear-gradient(135deg, #dff5ec, #c2ead8); }
+.metric-card-3 { background: linear-gradient(135deg, #e8e4ff, #d3ccf9); }
+.metric-card-4 { background: linear-gradient(135deg, #fef3dc, #fde5b4); }
 
 .metric-card::after {
     content: '';
     position: absolute;
-    top: -30%;
-    right: -10%;
-    width: 80px;
-    height: 80px;
+    top: -20%;
+    right: -8%;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.35);
 }
 
-.metric-icon {
-    font-size: 28px;
-    margin-bottom: 10px;
-    display: block;
-}
+.metric-icon  { font-size: 26px; margin-bottom: 9px; display: block; }
 
-.metric-value {
-    font-size: 34px;
-    font-weight: 800;
-    color: white;
-    line-height: 1;
-    margin-bottom: 4px;
-}
+.metric-value-1 { font-size: 32px; font-weight: 800; color: #1a6fa6; line-height:1; margin-bottom:3px; }
+.metric-value-2 { font-size: 32px; font-weight: 800; color: #1a8a5a; line-height:1; margin-bottom:3px; }
+.metric-value-3 { font-size: 32px; font-weight: 800; color: #5a44cc; line-height:1; margin-bottom:3px; }
+.metric-value-4 { font-size: 32px; font-weight: 800; color: #b5770a; line-height:1; margin-bottom:3px; }
 
 .metric-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.8);
-    font-weight: 500;
+    font-size: 11.5px;
+    color: #4a6070;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.7px;
 }
 
 /* ── Section Cards ── */
 .section-card {
-    background: rgba(255,255,255,0.97);
-    border-radius: 20px;
-    padding: 28px 32px;
-    margin-bottom: 24px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px;
+    padding: 26px 30px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 20px rgba(27,79,114,0.08);
+    border: 1px solid #d6eaf8;
 }
 
 .section-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #eaf4fb;
 }
 
 .section-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 19px;
     flex-shrink: 0;
 }
 
-.icon-purple { background: linear-gradient(135deg, #667eea, #764ba2); }
-.icon-pink   { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.icon-blue   { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.icon-blue1  { background: #d6eaf8; }
+.icon-blue2  { background: #d1f0e8; }
+.icon-blue3  { background: #e2dcff; }
 
 .section-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    color: #1a1a2e;
+    color: #1b4f72;
     margin: 0;
 }
 
 .section-desc {
-    font-size: 13px;
-    color: #888;
+    font-size: 12.5px;
+    color: #7f9aaa;
     margin: 2px 0 0 0;
 }
 
 /* ── Refresh Button ── */
 .stButton > button {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    background: linear-gradient(135deg, #1a6fa6, #2e86c1) !important;
     color: white !important;
     border: none !important;
-    border-radius: 12px !important;
-    padding: 10px 28px !important;
+    border-radius: 11px !important;
+    padding: 9px 26px !important;
     font-family: 'Baloo 2', sans-serif !important;
-    font-size: 15px !important;
+    font-size: 14.5px !important;
     font-weight: 600 !important;
-    letter-spacing: 0.3px !important;
-    box-shadow: 0 4px 15px rgba(102,126,234,0.4) !important;
+    letter-spacing: 0.2px !important;
+    box-shadow: 0 4px 14px rgba(26,111,166,0.28) !important;
     transition: all 0.2s !important;
 }
 
 .stButton > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(102,126,234,0.5) !important;
+    box-shadow: 0 8px 22px rgba(26,111,166,0.36) !important;
 }
 
 /* ── Selectbox ── */
 .stSelectbox > div > div {
-    border-radius: 12px !important;
-    border: 2px solid #667eea !important;
+    border-radius: 11px !important;
+    border: 2px solid #a9cfe8 !important;
     font-family: 'Baloo 2', sans-serif !important;
     background: white !important;
 }
@@ -231,28 +233,26 @@ html, body, [class*="css"] {
 .stDataFrame {
     border-radius: 12px !important;
     overflow: hidden !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 2px 14px rgba(27,79,114,0.07) !important;
 }
 
-/* ── Success / Info ── */
+/* ── Alerts ── */
 .stSuccess {
-    border-radius: 12px !important;
-    background: linear-gradient(135deg, #43e97b22, #38f9d722) !important;
-    border-left: 4px solid #43e97b !important;
+    border-radius: 11px !important;
+    background: #eafaf1 !important;
+    border-left: 4px solid #27ae60 !important;
 }
 
 /* ── Spinner ── */
-.stSpinner > div {
-    border-top-color: #667eea !important;
-}
+.stSpinner > div { border-top-color: #1a6fa6 !important; }
 
 /* ── Divider ── */
 hr {
     border: none !important;
     height: 2px !important;
-    background: linear-gradient(90deg, #667eea, #f093fb, #fda085) !important;
+    background: linear-gradient(90deg, #a9cfe8, #b8e8d4, #c4b8f0) !important;
     border-radius: 2px !important;
-    margin: 24px 0 !important;
+    margin: 22px 0 !important;
 }
 
 /* ── Badge ── */
@@ -262,24 +262,23 @@ hr {
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .badge-warning {
-    background: linear-gradient(135deg, #f093fb22, #f5576c22);
-    color: #f5576c;
-    border: 1px solid #f5576c44;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc10744;
 }
 
 .badge-success {
-    background: linear-gradient(135deg, #43e97b22, #38f9d722);
-    color: #0b8a4e;
-    border: 1px solid #43e97b44;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #28a74544;
 }
 
 /* ── Hide Streamlit Defaults ── */
 #MainMenu, footer, header { visibility: hidden; }
-.block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -306,7 +305,6 @@ def load_kobo_data():
 
     df = pd.json_normalize(all_records)
 
-    # Rename BEFORE stripping group prefix
     df = df.rename(columns={
         'group_og9hq60/asha':       'asha',
         'group_og9hq60/Paticipant': 'Paticipant'
@@ -331,7 +329,7 @@ if "df" not in st.session_state:
 st.markdown("""
 <div class="hero-banner">
     <h1 class="hero-title">🌸 आशा मॉनिटरिंग डॅशबोर्ड</h1>
-    <p class="hero-subtitle">KoboToolbox · रिअल-टाइम डेटा विश्लेषण · सहभागी नोंदी</p>
+    <p class="hero-subtitle">KoboToolbox &nbsp;·&nbsp; रिअल-टाइम डेटा विश्लेषण &nbsp;·&nbsp; सहभागी नोंदी</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -365,11 +363,10 @@ df['Month_num'] = df['_submission_time'].dt.month
 # =====================
 # DUPLICATE CALCULATION
 # =====================
-dup = df[df.duplicated(subset=['asha', 'Paticipant'], keep=False)]
+dup               = df[df.duplicated(subset=['asha', 'Paticipant'], keep=False)]
 total_asha        = df['asha'].nunique()
 total_participants = df['Paticipant'].nunique()
 total_duplicates  = len(dup)
-dup_ashas         = dup['asha'].nunique()
 
 # =====================
 # METRIC CARDS
@@ -378,22 +375,22 @@ st.markdown(f"""
 <div class="metrics-row">
     <div class="metric-card metric-card-1">
         <span class="metric-icon">📋</span>
-        <div class="metric-value">{df.shape[0]}</div>
+        <div class="metric-value-1">{df.shape[0]}</div>
         <div class="metric-label">एकूण नोंदी</div>
     </div>
     <div class="metric-card metric-card-2">
         <span class="metric-icon">👩‍⚕️</span>
-        <div class="metric-value">{total_asha}</div>
+        <div class="metric-value-2">{total_asha}</div>
         <div class="metric-label">एकूण आशा</div>
     </div>
     <div class="metric-card metric-card-3">
         <span class="metric-icon">👥</span>
-        <div class="metric-value">{total_participants}</div>
+        <div class="metric-value-3">{total_participants}</div>
         <div class="metric-label">अनन्य सहभागी</div>
     </div>
     <div class="metric-card metric-card-4">
         <span class="metric-icon">⚠️</span>
-        <div class="metric-value">{total_duplicates}</div>
+        <div class="metric-value-4">{total_duplicates}</div>
         <div class="metric-label">डुप्लिकेट नोंदी</div>
     </div>
 </div>
@@ -401,11 +398,12 @@ st.markdown(f"""
 
 # =====================
 # TABLE 1 : ASHA × MONTH
+# — faint blue-green gradient (no dark colors)
 # =====================
 st.markdown("""
 <div class="section-card">
     <div class="section-header">
-        <div class="section-icon icon-purple">📅</div>
+        <div class="section-icon icon-blue1">📅</div>
         <div>
             <p class="section-title">तक्ता १ · आशा फॉर्म भरलेले कॅलेंडर टेबल</p>
             <p class="section-desc">प्रत्येक महिन्यातील आशानिहाय सहभागी संख्या</p>
@@ -425,13 +423,46 @@ table1 = table1.reindex(columns=month_order)
 table1['🔢 एकूण'] = table1.sum(axis=1)
 table1 = table1.sort_values('🔢 एकूण', ascending=False)
 
-st.dataframe(
+# Faint pastel blue for month cols, faint sky for total
+import matplotlib.colors as mcolors
+
+def light_blue_cmap():
+    """White → very light steel blue (faint)"""
+    return mcolors.LinearSegmentedColormap.from_list(
+        "light_blue", ["#ffffff", "#cce5f6"]
+    )
+
+def light_teal_cmap():
+    return mcolors.LinearSegmentedColormap.from_list(
+        "light_teal", ["#ffffff", "#c2ead8"]
+    )
+
+styled = (
     table1.style
-        .background_gradient(cmap='RdYlGn', subset=table1.columns[:-1])
-        .background_gradient(cmap='Blues', subset=['🔢 एकूण'])
-        .format("{:.0f}"),
+    .background_gradient(cmap=light_blue_cmap(), subset=list(month_order))
+    .background_gradient(cmap=light_teal_cmap(), subset=['🔢 एकूण'])
+    .format("{:.0f}")
+    .set_properties(**{
+        'font-family': 'Baloo 2, sans-serif',
+        'font-size':   '13px',
+        'color':       '#1b4f72'
+    })
+    .set_table_styles([
+        {'selector': 'th',
+         'props': [('background-color', '#d6eaf8'),
+                   ('color', '#1b4f72'),
+                   ('font-weight', '700'),
+                   ('font-size', '13px'),
+                   ('border', '1px solid #b8d9f0')]},
+        {'selector': 'td',
+         'props': [('border', '1px solid #eaf4fb')]},
+    ])
+)
+
+st.dataframe(
+    styled,
     use_container_width=True,
-    height=min(400, (len(table1) + 1) * 38 + 10)
+    height=min(420, (len(table1) + 1) * 38 + 10)
 )
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -441,7 +472,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("""
 <div class="section-card">
     <div class="section-header">
-        <div class="section-icon icon-pink">🔁</div>
+        <div class="section-icon icon-blue2">🔁</div>
         <div>
             <p class="section-title">तक्ता २ · आशानुसार डुप्लिकेट नोंदी संख्या</p>
             <p class="section-desc">एकाच सहभागीच्या अनेक नोंदी असलेल्या आशा</p>
@@ -460,12 +491,42 @@ if len(dup) > 0:
         .rename(columns={'asha': '👩‍⚕️ आशा नाव'})
     )
 
-    st.dataframe(
+    def light_peach_cmap():
+        return mcolors.LinearSegmentedColormap.from_list(
+            "light_peach", ["#ffffff", "#ffe0c2"]
+        )
+
+    def light_lavender_cmap():
+        return mcolors.LinearSegmentedColormap.from_list(
+            "light_lav", ["#ffffff", "#ddd4ff"]
+        )
+
+    styled2 = (
         table2.style
-            .background_gradient(cmap='OrRd', subset=['डुप्लिकेट_नोंदी'])
-            .background_gradient(cmap='YlOrBr', subset=['अनन्य_सहभागी']),
+        .background_gradient(cmap=light_peach_cmap(),    subset=['डुप्लिकेट_नोंदी'])
+        .background_gradient(cmap=light_lavender_cmap(), subset=['अनन्य_सहभागी'])
+        .format({'डुप्लिकेट_नोंदी': '{:.0f}', 'अनन्य_सहभागी': '{:.0f}'})
+        .set_properties(**{
+            'font-family': 'Baloo 2, sans-serif',
+            'font-size': '13px',
+            'color': '#1b4f72'
+        })
+        .set_table_styles([
+            {'selector': 'th',
+             'props': [('background-color', '#d6eaf8'),
+                       ('color', '#1b4f72'),
+                       ('font-weight', '700'),
+                       ('font-size', '13px'),
+                       ('border', '1px solid #b8d9f0')]},
+            {'selector': 'td',
+             'props': [('border', '1px solid #eaf4fb')]},
+        ])
+    )
+
+    st.dataframe(
+        styled2,
         use_container_width=True,
-        height=min(350, (len(table2) + 1) * 38 + 10)
+        height=min(360, (len(table2) + 1) * 38 + 10)
     )
 else:
     st.success("✅ कोणतेही डुप्लिकेट सहभागी आढळले नाहीत.")
@@ -478,7 +539,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("""
 <div class="section-card">
     <div class="section-header">
-        <div class="section-icon icon-blue">🔍</div>
+        <div class="section-icon icon-blue3">🔍</div>
         <div>
             <p class="section-title">तक्ता ३ · आशानुसार डुप्लिकेट यादी</p>
             <p class="section-desc">निवडलेल्या आशाच्या एकाच सहभागीच्या सर्व नोंदी</p>
@@ -509,17 +570,40 @@ if len(dup) > 0:
     })
 
     st.markdown(f"""
-    <div style="margin: 12px 0 16px 0;">
+    <div style="margin:10px 0 14px 0;">
         <span class="badge badge-warning">⚠️ {len(table3)} डुप्लिकेट नोंदी आढळल्या</span>
     </div>
     """, unsafe_allow_html=True)
 
-    st.dataframe(
+    def light_rose_cmap():
+        return mcolors.LinearSegmentedColormap.from_list(
+            "light_rose", ["#ffffff", "#ffd6d6"]
+        )
+
+    styled3 = (
         table3.style
-            .background_gradient(cmap='Reds', subset=['🔢 एकूण नोंदी'])
-            .applymap(lambda _: 'background-color: #fff5f5', subset=['👤 सहभागी']),
+        .background_gradient(cmap=light_rose_cmap(), subset=['🔢 एकूण नोंदी'])
+        .set_properties(**{
+            'font-family': 'Baloo 2, sans-serif',
+            'font-size': '13px',
+            'color': '#1b4f72'
+        })
+        .set_table_styles([
+            {'selector': 'th',
+             'props': [('background-color', '#d6eaf8'),
+                       ('color', '#1b4f72'),
+                       ('font-weight', '700'),
+                       ('font-size', '13px'),
+                       ('border', '1px solid #b8d9f0')]},
+            {'selector': 'td',
+             'props': [('border', '1px solid #eaf4fb')]},
+        ])
+    )
+
+    st.dataframe(
+        styled3,
         use_container_width=True,
-        height=min(400, (len(table3) + 1) * 38 + 10)
+        height=min(420, (len(table3) + 1) * 38 + 10)
     )
 else:
     st.success("✅ कोणतेही डुप्लिकेट सहभागी आढळले नाहीत.")
@@ -531,7 +615,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # =====================
 st.markdown("""
 <hr/>
-<div style="text-align:center; color:rgba(255,255,255,0.7); font-size:13px; padding: 8px 0 16px 0;">
+<div style="text-align:center; color:#5a8aaa; font-size:13px; padding:6px 0 14px 0;">
     🌸 आशा मॉनिटरिंग डॅशबोर्ड &nbsp;·&nbsp; KoboToolbox द्वारे &nbsp;·&nbsp; Streamlit
 </div>
 """, unsafe_allow_html=True)
