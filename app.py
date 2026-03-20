@@ -1,6 +1,7 @@
 import streamlit as st
 from koboextractor import KoboExtractor
 import pandas as pd
+import io
 
 # =====================
 # PAGE CONFIG
@@ -187,6 +188,7 @@ html, body, [class*="css"] {
 .icon-blue1  { background: #d6eaf8; }
 .icon-blue2  { background: #d1f0e8; }
 .icon-blue3  { background: #e2dcff; }
+.icon-green  { background: #d4f5e2; }
 
 .section-title {
     font-size: 18px;
@@ -219,6 +221,16 @@ html, body, [class*="css"] {
 .stButton > button:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 22px rgba(26,111,166,0.36) !important;
+}
+
+/* ── Download Button ── */
+.stDownloadButton > button {
+    border-radius: 11px !important;
+    padding: 9px 22px !important;
+    font-family: 'Baloo 2', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
 }
 
 /* ── Selectbox ── */
@@ -317,6 +329,20 @@ def load_kobo_data():
     return df
 
 # =====================
+# DOWNLOAD HELPERS
+# =====================
+def to_csv(dataframe):
+    return dataframe.to_csv(index=False).encode('utf-8-sig')  # utf-8-sig for Excel-friendly Marathi text
+
+def to_excel(sheets: dict):
+    """sheets = {'Sheet Name': dataframe, ...}"""
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine='openpyxl') as writer:
+        for sheet_name, df_sheet in sheets.items():
+            df_sheet.to_excel(writer, sheet_name=sheet_name, index=True)
+    return buf.getvalue()
+
+# =====================
 # SESSION STATE
 # =====================
 if "df" not in st.session_state:
@@ -398,7 +424,6 @@ st.markdown(f"""
 
 # =====================
 # TABLE 1 : ASHA × MONTH
-# — faint blue-green gradient (no dark colors)
 # =====================
 st.markdown("""
 <div class="section-card">
@@ -423,47 +448,28 @@ table1 = table1.reindex(columns=month_order)
 table1['🔢 एकूण'] = table1.sum(axis=1)
 table1 = table1.sort_values('🔢 एकूण', ascending=False)
 
-# Faint pastel blue for month cols, faint sky for total
 import matplotlib.colors as mcolors
 
 def light_blue_cmap():
-    """White → very light steel blue (faint)"""
-    return mcolors.LinearSegmentedColormap.from_list(
-        "light_blue", ["#ffffff", "#cce5f6"]
-    )
+    return mcolors.LinearSegmentedColormap.from_list("light_blue", ["#ffffff", "#cce5f6"])
 
 def light_teal_cmap():
-    return mcolors.LinearSegmentedColormap.from_list(
-        "light_teal", ["#ffffff", "#c2ead8"]
-    )
+    return mcolors.LinearSegmentedColormap.from_list("light_teal", ["#ffffff", "#c2ead8"])
 
 styled = (
     table1.style
     .background_gradient(cmap=light_blue_cmap(), subset=list(month_order))
     .background_gradient(cmap=light_teal_cmap(), subset=['🔢 एकूण'])
     .format("{:.0f}")
-    .set_properties(**{
-        'font-family': 'Baloo 2, sans-serif',
-        'font-size':   '13px',
-        'color':       '#1b4f72'
-    })
+    .set_properties(**{'font-family': 'Baloo 2, sans-serif', 'font-size': '13px', 'color': '#1b4f72'})
     .set_table_styles([
-        {'selector': 'th',
-         'props': [('background-color', '#d6eaf8'),
-                   ('color', '#1b4f72'),
-                   ('font-weight', '700'),
-                   ('font-size', '13px'),
-                   ('border', '1px solid #b8d9f0')]},
-        {'selector': 'td',
-         'props': [('border', '1px solid #eaf4fb')]},
+        {'selector': 'th', 'props': [('background-color', '#d6eaf8'), ('color', '#1b4f72'),
+                                      ('font-weight', '700'), ('font-size', '13px'), ('border', '1px solid #b8d9f0')]},
+        {'selector': 'td', 'props': [('border', '1px solid #eaf4fb')]},
     ])
 )
 
-st.dataframe(
-    styled,
-    use_container_width=True,
-    height=min(420, (len(table1) + 1) * 38 + 10)
-)
+st.dataframe(styled, use_container_width=True, height=min(420, (len(table1) + 1) * 38 + 10))
 st.markdown("</div>", unsafe_allow_html=True)
 
 # =====================
@@ -492,42 +498,25 @@ if len(dup) > 0:
     )
 
     def light_peach_cmap():
-        return mcolors.LinearSegmentedColormap.from_list(
-            "light_peach", ["#ffffff", "#ffe0c2"]
-        )
+        return mcolors.LinearSegmentedColormap.from_list("light_peach", ["#ffffff", "#ffe0c2"])
 
     def light_lavender_cmap():
-        return mcolors.LinearSegmentedColormap.from_list(
-            "light_lav", ["#ffffff", "#ddd4ff"]
-        )
+        return mcolors.LinearSegmentedColormap.from_list("light_lav", ["#ffffff", "#ddd4ff"])
 
     styled2 = (
         table2.style
-        .background_gradient(cmap=light_peach_cmap(),    subset=['डुप्लिकेट_नोंदी'])
+        .background_gradient(cmap=light_peach_cmap(), subset=['डुप्लिकेट_नोंदी'])
         .background_gradient(cmap=light_lavender_cmap(), subset=['अनन्य_सहभागी'])
         .format({'डुप्लिकेट_नोंदी': '{:.0f}', 'अनन्य_सहभागी': '{:.0f}'})
-        .set_properties(**{
-            'font-family': 'Baloo 2, sans-serif',
-            'font-size': '13px',
-            'color': '#1b4f72'
-        })
+        .set_properties(**{'font-family': 'Baloo 2, sans-serif', 'font-size': '13px', 'color': '#1b4f72'})
         .set_table_styles([
-            {'selector': 'th',
-             'props': [('background-color', '#d6eaf8'),
-                       ('color', '#1b4f72'),
-                       ('font-weight', '700'),
-                       ('font-size', '13px'),
-                       ('border', '1px solid #b8d9f0')]},
-            {'selector': 'td',
-             'props': [('border', '1px solid #eaf4fb')]},
+            {'selector': 'th', 'props': [('background-color', '#d6eaf8'), ('color', '#1b4f72'),
+                                          ('font-weight', '700'), ('font-size', '13px'), ('border', '1px solid #b8d9f0')]},
+            {'selector': 'td', 'props': [('border', '1px solid #eaf4fb')]},
         ])
     )
 
-    st.dataframe(
-        styled2,
-        use_container_width=True,
-        height=min(360, (len(table2) + 1) * 38 + 10)
-    )
+    st.dataframe(styled2, use_container_width=True, height=min(360, (len(table2) + 1) * 38 + 10))
 else:
     st.success("✅ कोणतेही डुप्लिकेट सहभागी आढळले नाहीत.")
 
@@ -576,37 +565,123 @@ if len(dup) > 0:
     """, unsafe_allow_html=True)
 
     def light_rose_cmap():
-        return mcolors.LinearSegmentedColormap.from_list(
-            "light_rose", ["#ffffff", "#ffd6d6"]
-        )
+        return mcolors.LinearSegmentedColormap.from_list("light_rose", ["#ffffff", "#ffd6d6"])
 
     styled3 = (
         table3.style
         .background_gradient(cmap=light_rose_cmap(), subset=['🔢 एकूण नोंदी'])
-        .set_properties(**{
-            'font-family': 'Baloo 2, sans-serif',
-            'font-size': '13px',
-            'color': '#1b4f72'
-        })
+        .set_properties(**{'font-family': 'Baloo 2, sans-serif', 'font-size': '13px', 'color': '#1b4f72'})
         .set_table_styles([
-            {'selector': 'th',
-             'props': [('background-color', '#d6eaf8'),
-                       ('color', '#1b4f72'),
-                       ('font-weight', '700'),
-                       ('font-size', '13px'),
-                       ('border', '1px solid #b8d9f0')]},
-            {'selector': 'td',
-             'props': [('border', '1px solid #eaf4fb')]},
+            {'selector': 'th', 'props': [('background-color', '#d6eaf8'), ('color', '#1b4f72'),
+                                          ('font-weight', '700'), ('font-size', '13px'), ('border', '1px solid #b8d9f0')]},
+            {'selector': 'td', 'props': [('border', '1px solid #eaf4fb')]},
         ])
     )
 
-    st.dataframe(
-        styled3,
-        use_container_width=True,
-        height=min(420, (len(table3) + 1) * 38 + 10)
-    )
+    st.dataframe(styled3, use_container_width=True, height=min(420, (len(table3) + 1) * 38 + 10))
 else:
     st.success("✅ कोणतेही डुप्लिकेट सहभागी आढळले नाहीत.")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# =====================
+# DOWNLOAD SECTION
+# =====================
+st.markdown("""
+<div class="section-card">
+    <div class="section-header">
+        <div class="section-icon icon-green">⬇️</div>
+        <div>
+            <p class="section-title">डेटा डाउनलोड करा</p>
+            <p class="section-desc">कॅलेंडर टेबल, डुप्लिकेट संख्या व डुप्लिकेट यादी Excel किंवा CSV स्वरूपात डाउनलोड करा</p>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+dl_col1, dl_col2, dl_col3 = st.columns(3)
+
+# ── Calendar table ──
+table1_export = table1.copy()
+table1_export.index.name = 'आशा'
+
+with dl_col1:
+    st.markdown("**📅 कॅलेंडर टेबल**")
+    st.download_button(
+        label="⬇️ CSV डाउनलोड",
+        data=table1_export.to_csv().encode('utf-8-sig'),
+        file_name="आशा_कॅलेंडर_टेबल.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+    buf_cal = io.BytesIO()
+    with pd.ExcelWriter(buf_cal, engine='openpyxl') as w:
+        table1_export.to_excel(w, sheet_name='कॅलेंडर टेबल', index=True)
+    st.download_button(
+        label="⬇️ Excel डाउनलोड",
+        data=buf_cal.getvalue(),
+        file_name="आशा_कॅलेंडर_टेबल.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True
+    )
+
+# ── Duplicate count (table2) ──
+with dl_col2:
+    st.markdown("**🔁 डुप्लिकेट संख्या**")
+    if len(dup) > 0:
+        table2_export = (
+            dup.groupby('asha').agg(
+                डुप्लिकेट_नोंदी=('Paticipant', 'count'),
+                अनन्य_सहभागी=('Paticipant', 'nunique')
+            )
+            .reset_index()
+            .sort_values('डुप्लिकेट_नोंदी', ascending=False)
+            .rename(columns={'asha': 'आशा नाव'})
+        )
+        st.download_button(
+            label="⬇️ CSV डाउनलोड",
+            data=to_csv(table2_export),
+            file_name="आशा_डुप्लिकेट_संख्या.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+        buf_dup2 = io.BytesIO()
+        with pd.ExcelWriter(buf_dup2, engine='openpyxl') as w:
+            table2_export.to_excel(w, sheet_name='डुप्लिकेट संख्या', index=False)
+        st.download_button(
+            label="⬇️ Excel डाउनलोड",
+            data=buf_dup2.getvalue(),
+            file_name="आशा_डुप्लिकेट_संख्या.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
+    else:
+        st.info("कोणतेही डुप्लिकेट नाहीत.")
+
+# ── Duplicate detail list (all dup rows) ──
+with dl_col3:
+    st.markdown("**🔍 डुप्लिकेट यादी**")
+    if len(dup) > 0:
+        dup_export = dup[['asha', 'Paticipant', '_submission_time']].copy()
+        dup_export.columns = ['आशा', 'सहभागी', 'नोंद वेळ']
+        st.download_button(
+            label="⬇️ CSV डाउनलोड",
+            data=to_csv(dup_export),
+            file_name="आशा_डुप्लिकेट_यादी.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+        buf_dup3 = io.BytesIO()
+        with pd.ExcelWriter(buf_dup3, engine='openpyxl') as w:
+            dup_export.to_excel(w, sheet_name='डुप्लिकेट यादी', index=False)
+        st.download_button(
+            label="⬇️ Excel डाउनलोड",
+            data=buf_dup3.getvalue(),
+            file_name="आशा_डुप्लिकेट_यादी.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
+    else:
+        st.info("कोणतेही डुप्लिकेट नाहीत.")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
