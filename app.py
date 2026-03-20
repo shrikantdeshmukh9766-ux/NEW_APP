@@ -598,7 +598,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-dl_col1, dl_col2, dl_col3 = st.columns(3)
+dl_col1, dl_col3 = st.columns(2)
 
 # ── Calendar table ──
 table1_export = table1.copy()
@@ -617,31 +617,6 @@ with dl_col1:
         use_container_width=True
     )
 
-# ── Duplicate count (table2) ──
-with dl_col2:
-    st.markdown("**🔁 डुप्लिकेट संख्या**")
-    if len(dup) > 0:
-        table2_export = (
-            dup.groupby('asha').agg(
-                डुप्लिकेट_नोंदी=('Paticipant', 'count'),
-                अनन्य_सहभागी=('Paticipant', 'nunique')
-            )
-            .reset_index()
-            .sort_values('डुप्लिकेट_नोंदी', ascending=False)
-            .rename(columns={'asha': 'आशा नाव'})
-        )
-        buf_dup2 = io.BytesIO()
-        with pd.ExcelWriter(buf_dup2, engine='openpyxl') as w:
-            table2_export.to_excel(w, sheet_name='डुप्लिकेट संख्या', index=False)
-        st.download_button(
-            label="⬇️ Excel डाउनलोड",
-            data=buf_dup2.getvalue(),
-            file_name="आशा_डुप्लिकेट_संख्या.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-    else:
-        st.info("कोणतेही डुप्लिकेट नाहीत.")
 
 # ── Duplicate detail list (all dup rows) ──
 with dl_col3:
