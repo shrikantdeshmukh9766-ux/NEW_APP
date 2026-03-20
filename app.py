@@ -606,13 +606,6 @@ table1_export.index.name = 'आशा'
 
 with dl_col1:
     st.markdown("**📅 कॅलेंडर टेबल**")
-    st.download_button(
-        label="⬇️ CSV डाउनलोड",
-        data=table1_export.to_csv().encode('utf-8-sig'),
-        file_name="आशा_कॅलेंडर_टेबल.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
     buf_cal = io.BytesIO()
     with pd.ExcelWriter(buf_cal, engine='openpyxl') as w:
         table1_export.to_excel(w, sheet_name='कॅलेंडर टेबल', index=True)
@@ -637,13 +630,6 @@ with dl_col2:
             .sort_values('डुप्लिकेट_नोंदी', ascending=False)
             .rename(columns={'asha': 'आशा नाव'})
         )
-        st.download_button(
-            label="⬇️ CSV डाउनलोड",
-            data=to_csv(table2_export),
-            file_name="आशा_डुप्लिकेट_संख्या.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
         buf_dup2 = io.BytesIO()
         with pd.ExcelWriter(buf_dup2, engine='openpyxl') as w:
             table2_export.to_excel(w, sheet_name='डुप्लिकेट संख्या', index=False)
@@ -663,13 +649,6 @@ with dl_col3:
     if len(dup) > 0:
         dup_export = dup[['asha', 'Paticipant', '_submission_time']].copy()
         dup_export.columns = ['आशा', 'सहभागी', 'नोंद वेळ']
-        st.download_button(
-            label="⬇️ CSV डाउनलोड",
-            data=to_csv(dup_export),
-            file_name="आशा_डुप्लिकेट_यादी.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
         buf_dup3 = io.BytesIO()
         with pd.ExcelWriter(buf_dup3, engine='openpyxl') as w:
             dup_export.to_excel(w, sheet_name='डुप्लिकेट यादी', index=False)
