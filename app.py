@@ -593,7 +593,7 @@ st.markdown("""
         <div class="section-icon icon-green">⬇️</div>
         <div>
             <p class="section-title">डेटा डाउनलोड करा</p>
-            <p class="section-desc">कॅलेंडर टेबल, डुप्लिकेट संख्या व डुप्लिकेट यादी Excel किंवा CSV स्वरूपात डाउनलोड करा</p>
+            <p class="section-desc">कॅलेंडर टेबल व डुप्लिकेट यादी Excel स्वरूपात डाउनलोड करा</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
